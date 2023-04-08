@@ -7,4 +7,4 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-app.listen(process.env.PORT)
+app.listen(process.env.PORT || process.env.CYCLIC_URL);
