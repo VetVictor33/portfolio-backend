@@ -9,7 +9,7 @@ const DB_NAME = process.env.DB_NAME;
 
 async function main() {
     console.log('Trying to connect to the database');
-    const client = await MongoClient.connect(DB_URL).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
+    const client = await MongoClient.connect(DB_URL).catch(() => console.log({ message: 'Error when connecting to database' }));
     const db = client.db(DB_NAME);
     const collectionProjects = db.collection("projects");
     const collectionCompEdu = db.collection("complementary_education");
@@ -66,12 +66,12 @@ async function main() {
 
     const findByIdOnDb = async (id, collection) => {
         if (id.length !== 24) return { errorMessage: 'id needs to have 24 characters' }
-        const response = await collection.findOne({ _id: new ObjectId(id) }).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
+        const response = await collection.findOne({ _id: new ObjectId(id) }).catch(() => console.log({ message: 'Error when connecting to database' }));;
         return response
     }
 
     async function getCurrentId(collection) {
-        const itens = await collection.find().toArray().catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
+        const itens = await collection.find().toArray().catch(() => console.log({ message: 'Error when connecting to database' }));
         const lastItem = itens.slice(-1);
         const { id } = lastItem[0];
 
