@@ -9,7 +9,10 @@ const DB_NAME = process.env.DB_NAME;
 
 async function main() {
     console.log('Trying to connect to the database');
-    const client = await MongoClient.connect(DB_URL).catch(() => console.log({ message: 'Error when connecting to database' }));
+    const client = await MongoClient.connect(DB_URL).catch(() => {
+        console.log({ message: 'Error when connecting to database' })
+        return
+    });
     const db = client.db(DB_NAME);
     const collectionProjects = db.collection("projects");
     const collectionCompEdu = db.collection("complementary_education");
