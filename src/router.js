@@ -9,20 +9,20 @@ const DB_NAME = process.env.DB_NAME;
 
 async function main() {
     console.log('Trying to connect to the database');
-    const client = await MongoClient.connect(DB_URL);
+    const client = await MongoClient.connect(DB_URL).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
     const db = client.db(DB_NAME);
     const collectionProjects = db.collection("projects");
     const collectionCompEdu = db.collection("complementary_education");
     console.log('Successfully connected to the database');
 
     const getAllProjects = async (req, res) => {
-        const projects = await collectionProjects.find().toArray();
+        const projects = await collectionProjects.find().toArray().catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         res.status(200).json(projects)
     }
 
     const getProjectsById = async (req, res) => {
         const { id } = req.params;
-        const project = await findByIdOnDb(id, collectionProjects);
+        const project = await findByIdOnDb(id, collectionProjects).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
 
         if (project && project.errorMessage) return res.status(400).json({ message: project.errorMessage });
         if (!project) return res.status(404).json({ message: `The is no project with id ${id}` });
@@ -36,7 +36,7 @@ async function main() {
             return res.status(400).json({ message: "id, imgSrc, title, description, link, mobile and key are mandatory" });
         }
 
-        const id = await getCurrentId(collectionProjects);
+        const id = await getCurrentId(collectionProjects).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
 
         let project = { id, imgSrc, title, description, link };
         if (deploy) {
@@ -44,7 +44,7 @@ async function main() {
         } else {
             project = { ...project, mobile, keywords }
         }
-        const result = await collectionProjects.insertOne(project);
+        const result = await collectionProjects.insertOne(project).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         if (!result.acknowledged) {
             return res.status(500).json({ message: 'Não foi possível adicionar o projeto' });
         }
@@ -53,25 +53,25 @@ async function main() {
     }
 
     const getAllCompEdu = async (req, res) => {
-        const compEdu = await collectionCompEdu.find().toArray();
+        const compEdu = await collectionCompEdu.find().toArray().catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         res.status(200).json(compEdu);
     }
 
     const getCompEduById = async (req, res) => {
         const { id } = req.params;
-        const compEdu = await findByIdOnDb(id, collectionCompEdu);
+        const compEdu = await findByIdOnDb(id, collectionCompEdu).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         res.status(200).json(compEdu);
 
     }
 
     const findByIdOnDb = async (id, collection) => {
         if (id.length !== 24) return { errorMessage: 'id needs to have 24 characters' }
-        const response = await collection.findOne({ _id: new ObjectId(id) });
+        const response = await collection.findOne({ _id: new ObjectId(id) }).catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         return response
     }
 
     async function getCurrentId(collection) {
-        const itens = await collection.find().toArray();
+        const itens = await collection.find().toArray().catch(() => res.status(500).json({ message: 'Error when connecting to database' }));
         const lastItem = itens.slice(-1);
         const { id } = lastItem[0];
 
