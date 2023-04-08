@@ -46,7 +46,7 @@ async function main() {
         }
         const result = await collectionProjects.insertOne(project);
         if (!result.acknowledged) {
-            return res.status(500).json({ message: 'Não foi possível criar o personagem' })
+            return res.status(500).json({ message: 'Não foi possível adicionar o projeto' });
         }
 
         return res.status(201).json(project);
@@ -77,6 +77,8 @@ async function main() {
 
         return id + 1
     }
+
+    router.get('/', (req, res) => res.json('I AM COMPLEEETE'));
 
     router.get('/projects', getAllProjects);
     router.get('/projects/:id', getProjectsById);
